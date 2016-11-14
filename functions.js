@@ -1,39 +1,42 @@
 var bcrypt = require('bcryptjs'),
     Q = require('q'),
-    config = require('./config.js'), //config file contains all tokens and other private info
-    db = require('orchestrate')(config.db); //config.db holds Orchestrate token
+    config = require('./config.js'); //config file contains all tokens and other private info
+
+// MongoDB connection information
+var mongodbUrl = 'mongodb://' + config.mongodbHost + ':27017/users';
+var MongoClient = require('mongodb').MongoClient
 
 //used in local-signup strategy
 exports.localReg = function (username, password) {
   var deferred = Q.defer();
-  var hash = bcrypt.hashSync(password, 8);
-  var user = {
-    "username": username,
-    "password": hash,
-    "avatar": "http://placepuppy.it/images/homepage/Beagle_puppy_6_weeks.JPG"
-  }
-  //check if username is already assigned in our database
-  db.get('local-users', username)
-  .then(function (result){ //case in which user already exists in db
-    console.log('username already exists');
-    deferred.resolve(false); //username already exists
-  })
-  .fail(function (result) {//case in which user does not already exist in db
-      console.log(result.body);
-      if (result.body.message == 'The requested items could not be found.'){
-        console.log('Username is free for use');
-        db.put('local-users', username, user)
-        .then(function () {
-          console.log("USER: " + user);
-          deferred.resolve(user);
-        })
-        .fail(function (err) {
-          console.log("PUT FAIL:" + err.body);
-          deferred.reject(new Error(err.body));
-        });
-      } else {
-        deferred.reject(new Error(result.body));
-      }
+  
+  MongoClient.connect(mongodbUrl, function (err, db) {
+    var collection = db.collection('localUsers');
+
+    //check if username is already assigned in our database
+    collection.findOne({'username' : username})
+      .then(function (result) {
+        if (null != result) {
+          console.log("USERNAME ALREADY EXISTS:", result.username);
+          deferred.resolve(false); // username exists
+        }
+        else  {
+          var hash = bcrypt.hashSync(password, 8);
+          var user = {
+            "username": username,
+            "password": hash,
+            "avatar": "http://placepuppy.it/images/homepage/Beagle_puppy_6_weeks.JPG"
+          }
+
+          console.log("CREATING USER:", username);
+        
+          collection.insert(user)
+            .then(function () {
+              db.close();
+              deferred.resolve(user);
+            });
+        }
+      });
   });
 
   return deferred.promise;
@@ -47,25 +50,31 @@ exports.localReg = function (username, password) {
 exports.localAuth = function (username, password) {
   var deferred = Q.defer();
 
-  db.get('local-users', username)
-  .then(function (result){
-    console.log("FOUND USER");
-    var hash = result.body.password;
-    console.log(hash);
-    console.log(bcrypt.compareSync(password, hash));
-    if (bcrypt.compareSync(password, hash)) {
-      deferred.resolve(result.body);
-    } else {
-      console.log("PASSWORDS NOT MATCH");
-      deferred.resolve(false);
-    }
-  }).fail(function (err){
-    if (err.body.message == 'The requested items could not be found.'){
-          console.log("COULD NOT FIND USER IN DB FOR SIGNIN");
+  MongoClient.connect(mongodbUrl, function (err, db) {
+    var collection = db.collection('localUsers');
+
+    collection.findOne({'username' : username})
+      .then(function (result) {
+        if (null == result) {
+          console.log("USERNAME NOT FOUND:", username);
+
           deferred.resolve(false);
-    } else {
-      deferred.reject(new Error(err));
-    }
+        }
+        else {
+          var hash = result.password;
+
+          console.log("FOUND USER: " + result.username);
+
+          if (bcrypt.compareSync(password, hash)) {
+            deferred.resolve(result);
+          } else {
+            console.log("AUTHENTICATION FAILED");
+            deferred.resolve(false);
+          }
+        }
+
+        db.close();
+      });
   });
 
   return deferred.promise;

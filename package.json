@@ -1,18 +1,22 @@
 {
   "name": "userAuth",
   "version": "0.0.0",
-  "description": "Tutorial walking through user Auth with express passport and Orchestrate",
+  "description": "Tutorial walking through user Auth with Express, Passport, and MongoDB",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Jhenna Voorhis",
+  "authors": [
+    "Jhenna Voorhis",
+    "Erik L. Arneson"
+  ],
   "license": "MIT",
+  "repository": "https://github.com/pymander/userAuth",
   "dependencies": {
     "bcryptjs": "^0.7.12",
     "express": "^3.5.0",
-    "express3-handlebars": "^0.5.0",
-    "orchestrate": "^0.1.2",
+    "express-handlebars": "^3.0.0",
+    "mongodb": "^2.2.11",
     "passport": "^0.2.0",
     "passport-facebook": "^1.0.3",
     "passport-google": "^0.3.0",

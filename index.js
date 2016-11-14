@@ -1,5 +1,5 @@
 var express = require('express'),
-    exphbs  = require('express3-handlebars'),
+    exphbs  = require('express-handlebars'),
     passport = require('passport'),
     LocalStrategy = require('passport-local'),
     TwitterStrategy = require('passport-twitter'),
