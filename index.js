@@ -5,7 +5,7 @@ var express = require('express'),
     TwitterStrategy = require('passport-twitter'),
     GoolgeStrategy = require('passport-google'),
     FacebookStrategy = require('passport-facebook');
-    
+
 
 var config = require('./config.js'), //config file contains all tokens and other private info
     funct = require('./functions.js');
@@ -136,7 +136,7 @@ app.post('/local-reg', passport.authenticate('local-signup', {
 );
 
 //sends the request through our local login/signin strategy, and if successful takes user to homepage, otherwise returns then to signin page
-app.post('/login', passport.authenticate('local-signin', { 
+app.post('/login', passport.authenticate('local-signin', {
   successRedirect: '/',
   failureRedirect: '/signin'
   })
@@ -151,8 +151,9 @@ app.get('/logout', function(req, res){
   req.session.notice = "You have successfully been logged out " + name + "!";
 });
 
-
+var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080
+var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
 //===============PORT=================
-var port = process.env.PORT || 5000;
-app.listen(port);
+//var port = process.env.PORT || 5000;
+app.listen(server_port, server_ip_address);
 console.log("listening on " + port + "!");

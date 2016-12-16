@@ -3,13 +3,14 @@ var bcrypt = require('bcryptjs'),
     config = require('./config.js'); //config file contains all tokens and other private info
 
 // MongoDB connection information
-var mongodbUrl = 'mongodb://' + config.mongodbHost + ':27017/users';
+//var mongodbUrl = 'mongodb://' + config.mongodbHost + ':27017/users';
+var mongodbUrl = config.mongodbHost;
 var MongoClient = require('mongodb').MongoClient
 
 //used in local-signup strategy
 exports.localReg = function (username, password) {
   var deferred = Q.defer();
-  
+
   MongoClient.connect(mongodbUrl, function (err, db) {
     var collection = db.collection('localUsers');
 
@@ -29,7 +30,7 @@ exports.localReg = function (username, password) {
           }
 
           console.log("CREATING USER:", username);
-        
+
           collection.insert(user)
             .then(function () {
               db.close();
