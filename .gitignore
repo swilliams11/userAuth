@@ -35,3 +35,5 @@ npm-debug.log
 
 # Local config that should never be committed
 config.js
+
+node_modules/

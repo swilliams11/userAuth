@@ -11,20 +11,40 @@
     <div class="panel-body">
       <p>Username: {{user.username}}</p>
       <p>Avatar: <img src="{{user.avatar}}"/></p>
+      <p>token: {{token}}</p>
     </div>
   </div>
-  
+
 {{else}}
   <div class="jumbotron">
     <h1>MongoDB User Authentication</h1>
     <p>Sign in and view your profile!</p>
-    <p>
-      <a href="/signin" class="btn btn-primary btn-lg" role="button">
-        <span class="glyphicon glyphicon-user"></span> 
-        Sign in!
+    <!-- signin with edge -->
+    <!--p>
+      <a href="/signin-edge" class="btn btn-primary btn-lg" role="button">
+        <span class="glyphicon glyphicon-user"></span>
+        Sign in with your account!
       </a>
+    </p-->
+
+    <!--this is the authorization code flow - not currently configured-->
+    <!--p>
+      <a href="/auth/provider" class="btn btn-primary btn-lg" role="button">
+        <span class="glyphicon glyphicon-user"></span>
+        OAuth 2.0 auth code - Sign in with your account!
+      </a>
+    </p-->
+    <p>
+      <!-- this is the implicit grant test-->
+      <a href="/signin-implicit" class="btn btn-primary btn-lg" role="button">
+        <span class="glyphicon glyphicon-user"></span>
+        OAuth 2.0 Implicit - Sign in with your account!
+      </a>
+      <!--a href="/signin" class="btn btn-primary btn-lg" role="button">
+        <span class="glyphicon glyphicon-user"></span>
+        Sign in!
+      </a-->
     </p>
   </div>
-  
+
 {{/if}}
-   
