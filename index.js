@@ -542,7 +542,6 @@ app.post('/loginoauthimplicit', passport.authenticate('local-signin-oauth-implic
 */
 
 //authenticates the user then redirect to /callback/auth2
-//
 app.post('/loginoauthimplicit', function(req, res){
   console.log('username: ' + req.body.username +  ' password: ' + req.body.password);
   funct.localAuth(req.body.username, req.body.password)
