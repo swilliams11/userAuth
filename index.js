@@ -495,6 +495,7 @@ app.all('/callback/auth2',
            console.log(user);
            res.render('home', {user: app.get('User'), token: tokenParam});
          } else {
+           req.session.error = 'The token was null. Please try your request again or contact the site admin.'; //inform user could not log them in
            res.render('signinoauthimplicit');
          }
 
@@ -502,7 +503,8 @@ app.all('/callback/auth2',
       .fail(function(err){
         console.log("getTokenDeferred() FAILED!");
         console.log(err.body);
-        //res.end();
+        req.session.error = 'Invalid client ID. A token could not be generated.'; //inform user could not log them in
+        res.render('signinoauthimplicit');
       });
 });
 
